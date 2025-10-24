@@ -28,6 +28,9 @@ services:
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_USER: wordpress_user
       WORDPRESS_DB_PASSWORD: wordpress_password
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'https://deys-dev.unknow.pro');
+        define('WP_SITEURL', 'https://deys-dev.unknow.pro');
     volumes:
       - ./wp-content:/var/www/WordPress/wp-content
     depends_on:
