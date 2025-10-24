@@ -63,6 +63,16 @@ define('NONCE_SALT',       'B]eg.A+x,`}|c|_F;W~7nyw5fqt1#V 4*@2fNxAD8vuTmxc`CZ-]
  */
 $table_prefix = 'wp_';
 
+// После подключения к БД добавьте:
+if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $forwarded_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    $_SERVER['REMOTE_ADDR'] = $forwarded_ips[0];
+}
+
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+    $_SERVER['HTTPS'] = 'on';
+}
+
 /**
  * For developers: WordPress debugging mode.
  *
