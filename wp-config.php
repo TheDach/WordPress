@@ -22,7 +22,7 @@
 /** The name of the database for WordPress */
 define('DB_NAME', 'wordpress');
 define('DB_USER', 'wordpress_user');
-define('DB_PASSWORD', 'wordpress_password');
+define('DB_PASSWORD', 'root_password');
 define('DB_HOST', 'localhost:3306');  // ← правильный порт!
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
