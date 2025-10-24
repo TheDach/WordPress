@@ -29,8 +29,7 @@ services:
       WORDPRESS_DB_USER: wordpress_user
       WORDPRESS_DB_PASSWORD: wordpress_password
     volumes:
-      - wp_data:/var/www/html
-      - ./wp-content:/var/www/html/wp-content  # для тем и плагинов
+      - ./wp-content:/var/www/WordPress/wp-content
     depends_on:
       - db
     networks:
