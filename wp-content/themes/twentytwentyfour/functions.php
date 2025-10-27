@@ -1,206 +1,230 @@
 <?php
 /**
- * Twenty Twenty-Four functions and definitions
- *
- * @link https://developer.wordpress.org/themes/basics/theme-functions/
- *
- * @package Twenty Twenty-Four
- * @since Twenty Twenty-Four 1.0
+ * Portfolio Theme functions and definitions
  */
 
-/**
- * Register block styles.
- */
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
+}
 
-if ( ! function_exists( 'twentytwentyfour_block_styles' ) ) :
-	/**
-	 * Register custom block styles
-	 *
-	 * @since Twenty Twenty-Four 1.0
-	 * @return void
-	 */
-	function twentytwentyfour_block_styles() {
+function portfolio_theme_setup() {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('custom-logo');
+    
+    // Регистрируем меню
+    register_nav_menus(array(
+        'primary' => 'Основное меню',
+    ));
+}
 
-		register_block_style(
-			'core/details',
-			array(
-				'name'         => 'arrow-icon-details',
-				'label'        => __( 'Arrow icon', 'twentytwentyfour' ),
-				/*
-				 * Styles for the custom Arrow icon style of the Details block
-				 */
-				'inline_style' => '
-				.is-style-arrow-icon-details {
-					padding-top: var(--wp--preset--spacing--10);
-					padding-bottom: var(--wp--preset--spacing--10);
-				}
+add_action('after_setup_theme', 'portfolio_theme_setup');
 
-				.is-style-arrow-icon-details summary {
-					list-style-type: "\2193\00a0\00a0\00a0";
-				}
+function portfolio_theme_scripts() {
+    // Основной стиль темы
+    wp_enqueue_style('portfolio-style', get_stylesheet_uri());
+    
+    // Google Fonts
+    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    // Основной скрипт
+    wp_enqueue_script('portfolio-script', get_template_directory_uri() . '/assets/js/script.js', array(), '1.0', true);
+}
 
-				.is-style-arrow-icon-details[open]>summary {
-					list-style-type: "\2192\00a0\00a0\00a0";
-				}',
-			)
-		);
-		register_block_style(
-			'core/post-terms',
-			array(
-				'name'         => 'pill',
-				'label'        => __( 'Pill', 'twentytwentyfour' ),
-				/*
-				 * Styles variation for post terms
-				 * https://github.com/WordPress/gutenberg/issues/24956
-				 */
-				'inline_style' => '
-				.is-style-pill a,
-				.is-style-pill span:not([class], [data-rich-text-placeholder]) {
-					display: inline-block;
-					background-color: var(--wp--preset--color--base-2);
-					padding: 0.375rem 0.875rem;
-					border-radius: var(--wp--preset--spacing--20);
-				}
+add_action('wp_enqueue_scripts', 'portfolio_theme_scripts');
 
-				.is-style-pill a:hover {
-					background-color: var(--wp--preset--color--contrast-3);
-				}',
-			)
-		);
-		register_block_style(
-			'core/list',
-			array(
-				'name'         => 'checkmark-list',
-				'label'        => __( 'Checkmark', 'twentytwentyfour' ),
-				/*
-				 * Styles for the custom checkmark list block style
-				 * https://github.com/WordPress/gutenberg/issues/51480
-				 */
-				'inline_style' => '
-				ul.is-style-checkmark-list {
-					list-style-type: "\2713";
-				}
+// Кастомные настройки темы
+function portfolio_theme_customize_register($wp_customize) {
+    // Секция разработчика
+    $wp_customize->add_section('developer_section', array(
+        'title' => 'Информация разработчика',
+        'priority' => 30,
+    ));
 
-				ul.is-style-checkmark-list li {
-					padding-inline-start: 1ch;
-				}',
-			)
-		);
-		register_block_style(
-			'core/navigation-link',
-			array(
-				'name'         => 'arrow-link',
-				'label'        => __( 'With arrow', 'twentytwentyfour' ),
-				/*
-				 * Styles for the custom arrow nav link block style
-				 */
-				'inline_style' => '
-				.is-style-arrow-link .wp-block-navigation-item__label:after {
-					content: "\2197";
-					padding-inline-start: 0.25rem;
-					vertical-align: middle;
-					text-decoration: none;
-					display: inline-block;
-				}',
-			)
-		);
-		register_block_style(
-			'core/heading',
-			array(
-				'name'         => 'asterisk',
-				'label'        => __( 'With asterisk', 'twentytwentyfour' ),
-				'inline_style' => "
-				.is-style-asterisk:before {
-					content: '';
-					width: 1.5rem;
-					height: 3rem;
-					background: var(--wp--preset--color--contrast-2, currentColor);
-					clip-path: path('M11.93.684v8.039l5.633-5.633 1.216 1.23-5.66 5.66h8.04v1.737H13.2l5.701 5.701-1.23 1.23-5.742-5.742V21h-1.737v-8.094l-5.77 5.77-1.23-1.217 5.743-5.742H.842V9.98h8.162l-5.701-5.7 1.23-1.231 5.66 5.66V.684h1.737Z');
-					display: block;
-				}
+    // Имя разработчика
+    $wp_customize->add_setting('developer_name', array(
+        'default' => 'Иван Иванов',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
 
-				/* Hide the asterisk if the heading has no content, to avoid using empty headings to display the asterisk only, which is an A11Y issue */
-				.is-style-asterisk:empty:before {
-					content: none;
-				}
+    $wp_customize->add_control('developer_name', array(
+        'label' => 'Имя разработчика',
+        'section' => 'developer_section',
+        'type' => 'text',
+    ));
 
-				.is-style-asterisk:-moz-only-whitespace:before {
-					content: none;
-				}
+    // Должность
+    $wp_customize->add_setting('developer_position', array(
+        'default' => 'Android-разработчик',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
 
-				.is-style-asterisk.has-text-align-center:before {
-					margin: 0 auto;
-				}
+    $wp_customize->add_control('developer_position', array(
+        'label' => 'Должность',
+        'section' => 'developer_section',
+        'type' => 'text',
+    ));
 
-				.is-style-asterisk.has-text-align-right:before {
-					margin-left: auto;
-				}
+    // Описание
+    $wp_customize->add_setting('developer_description', array(
+        'default' => 'Создаю современные Android-приложения на Java/Kotlin и современных фреймворках',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
 
-				.rtl .is-style-asterisk.has-text-align-left:before {
-					margin-right: auto;
-				}",
-			)
-		);
-	}
-endif;
+    $wp_customize->add_control('developer_description', array(
+        'label' => 'Описание',
+        'section' => 'developer_section',
+        'type' => 'textarea',
+    ));
 
-add_action( 'init', 'twentytwentyfour_block_styles' );
+    // Email
+    $wp_customize->add_setting('developer_email', array(
+        'default' => 'ivan.ivanov@example.com',
+        'sanitize_callback' => 'sanitize_email',
+    ));
 
-/**
- * Enqueue block stylesheets.
- */
+    $wp_customize->add_control('developer_email', array(
+        'label' => 'Email',
+        'section' => 'developer_section',
+        'type' => 'email',
+    ));
 
-if ( ! function_exists( 'twentytwentyfour_block_stylesheets' ) ) :
-	/**
-	 * Enqueue custom block stylesheets
-	 *
-	 * @since Twenty Twenty-Four 1.0
-	 * @return void
-	 */
-	function twentytwentyfour_block_stylesheets() {
-		/**
-		 * The wp_enqueue_block_style() function allows us to enqueue a stylesheet
-		 * for a specific block. These will only get loaded when the block is rendered
-		 * (both in the editor and on the front end), improving performance
-		 * and reducing the amount of data requested by visitors.
-		 *
-		 * See https://make.wordpress.org/core/2021/12/15/using-multiple-stylesheets-per-block/ for more info.
-		 */
-		wp_enqueue_block_style(
-			'core/button',
-			array(
-				'handle' => 'twentytwentyfour-button-style-outline',
-				'src'    => get_parent_theme_file_uri( 'assets/css/button-outline.css' ),
-				'ver'    => wp_get_theme( get_template() )->get( 'Version' ),
-				'path'   => get_parent_theme_file_path( 'assets/css/button-outline.css' ),
-			)
-		);
-	}
-endif;
+    // Телефон
+    $wp_customize->add_setting('developer_phone', array(
+        'default' => '+7 (999) 123-45-67',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
 
-add_action( 'init', 'twentytwentyfour_block_stylesheets' );
+    $wp_customize->add_control('developer_phone', array(
+        'label' => 'Телефон',
+        'section' => 'developer_section',
+        'type' => 'text',
+    ));
 
-/**
- * Register pattern categories.
- */
+    // Местоположение
+    $wp_customize->add_setting('developer_location', array(
+        'default' => 'Томск, Россия',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
 
-if ( ! function_exists( 'twentytwentyfour_pattern_categories' ) ) :
-	/**
-	 * Register pattern categories
-	 *
-	 * @since Twenty Twenty-Four 1.0
-	 * @return void
-	 */
-	function twentytwentyfour_pattern_categories() {
+    $wp_customize->add_control('developer_location', array(
+        'label' => 'Местоположение',
+        'section' => 'developer_section',
+        'type' => 'text',
+    ));
 
-		register_block_pattern_category(
-			'twentytwentyfour_page',
-			array(
-				'label'       => _x( 'Pages', 'Block pattern category', 'twentytwentyfour' ),
-				'description' => __( 'A collection of full page layouts.', 'twentytwentyfour' ),
-			)
-		);
-	}
-endif;
+    // Опыт работы
+    $wp_customize->add_setting('developer_experience', array(
+        'default' => '2 года',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
 
-add_action( 'init', 'twentytwentyfour_pattern_categories' );
+    $wp_customize->add_control('developer_experience', array(
+        'label' => 'Опыт работы',
+        'section' => 'developer_section',
+        'type' => 'text',
+    ));
+
+    // Аватар
+    $wp_customize->add_setting('developer_avatar');
+
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'developer_avatar', array(
+        'label' => 'Аватар',
+        'section' => 'developer_section',
+    )));
+}
+
+add_action('customize_register', 'portfolio_theme_customize_register');
+
+// Создаем Custom Post Type для проектов
+function create_portfolio_post_type() {
+    register_post_type('portfolio', array(
+        'labels' => array(
+            'name' => 'Проекты',
+            'singular_name' => 'Проект',
+            'add_new' => 'Добавить проект',
+            'add_new_item' => 'Добавить новый проект',
+            'edit_item' => 'Редактировать проект',
+            'new_item' => 'Новый проект',
+            'view_item' => 'Просмотреть проект',
+            'search_items' => 'Найти проект',
+            'not_found' => 'Проектов не найдено',
+            'not_found_in_trash' => 'В корзине проектов не найдено'
+        ),
+        'public' => true,
+        'has_archive' => false,
+        'show_in_rest' => true,
+        'supports' => array('title', 'editor', 'thumbnail', 'excerpt'),
+        'menu_icon' => 'dashicons-portfolio',
+        'rewrite' => array('slug' => 'portfolio'),
+    ));
+}
+
+add_action('init', 'create_portfolio_post_type');
+
+// Добавляем мета-поля для проектов
+function add_portfolio_meta_boxes() {
+    add_meta_box(
+        'portfolio_details',
+        'Детали проекта',
+        'portfolio_meta_box_callback',
+        'portfolio',
+        'normal',
+        'high'
+    );
+}
+
+add_action('add_meta_boxes', 'add_portfolio_meta_boxes');
+
+function portfolio_meta_box_callback($post) {
+    wp_nonce_field('portfolio_meta_box', 'portfolio_meta_box_nonce');
+    
+    $live_url = get_post_meta($post->ID, '_live_url', true);
+    $github_url = get_post_meta($post->ID, '_github_url', true);
+    $technologies = get_post_meta($post->ID, '_technologies', true);
+    $features = get_post_meta($post->ID, '_features', true);
+    ?>
+    <p>
+        <label for="live_url">Live URL:</label>
+        <input type="url" id="live_url" name="live_url" value="<?php echo esc_attr($live_url); ?>" style="width: 100%;">
+    </p>
+    <p>
+        <label for="github_url">GitHub URL:</label>
+        <input type="url" id="github_url" name="github_url" value="<?php echo esc_attr($github_url); ?>" style="width: 100%;">
+    </p>
+    <p>
+        <label for="technologies">Технологии (через запятую):</label>
+        <input type="text" id="technologies" name="technologies" value="<?php echo esc_attr($technologies); ?>" style="width: 100%;">
+    </p>
+    <p>
+        <label for="features">Особенности (каждая с новой строки):</label>
+        <textarea id="features" name="features" style="width: 100%; height: 100px;"><?php echo esc_textarea($features); ?></textarea>
+    </p>
+    <?php
+}
+
+function save_portfolio_meta($post_id) {
+    if (!isset($_POST['portfolio_meta_box_nonce']) || 
+        !wp_verify_nonce($_POST['portfolio_meta_box_nonce'], 'portfolio_meta_box')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    $fields = array('live_url', 'github_url', 'technologies', 'features');
+    
+    foreach ($fields as $field) {
+        if (isset($_POST[$field])) {
+            update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST[$field]));
+        }
+    }
+}
+
+add_action('save_post', 'save_portfolio_meta');
+?>
